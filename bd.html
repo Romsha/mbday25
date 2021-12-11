@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport", initial-scale=1.0">
+    <title>Level 1</title>
+    <style>
+        input::-webkit-outer-spin-button,
+        input::-webkit-inner-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+        input[type=number] {
+            -moz-appearance: textfield;
+        }
+        body {
+            display: grid;
+            box-sizing: border-box;
+            height: 100%;
+            height: -webkit-fill-available;
+            width: 100%;
+            grid-template-columns: 1fr;
+            grid-template-rows: 1fr max-content max-content max-content 1fr;
+            justify-items: center;
+            margin: 0;
+            padding: 50px 20px;
+            overflow: hidden;
+            gap: 200px;
+            font-family: Helvetica, Arial, sans-serif;
+            background-image: url("bd_icons.png");
+            background-repeat: repeat;
+            background-size: 300px 300px;
+        }
+        div {
+            display: inline-block;
+        }
+        #code, #hint {
+            display: grid;
+            grid-template-columns: 1fr;
+        } 
+        #hint {
+            align-self: end;
+            font-size: 60px;
+            color: #333;
+            gap: 30px;
+        }
+        #code {
+            gap: 50px;
+            grid-template-rows: max-content max-content;
+        }
+        #input {
+            display: grid;
+            grid-template-rows: 1fr;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 30px;
+        }
+        button {
+            justify-self: center;
+            font-size: 50px;
+            padding: 10px 20px;
+        }
+        input {
+            font-size: 80px;
+            height: 90px;
+            outline: none;
+            border-radius: 10px;
+            border-width: 5px;
+            width:50px;
+            text-align: center;
+        }
+        #title {
+            font-size: 80px;
+            color: #222;
+        }
+        h1 {
+            align-self: center;
+            font-size: 200px;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div></div>
+    <div id="title">
+        Enter The code
+    </div>
+    <div id="code">
+        <div id="input"></div>
+        <button onclick="buttonPress()" id="codeButton">Check Code</button>
+    </div>
+    <div id="hint">
+        <div>Click For Easy Mode</div>
+        <button onclick="setEasyMode()" id="helpButton">Help Me</button>
+    </div>
+    <div></div>
+
+    <script>
+        const secretCode = [1,2,4,8];
+        let needRefresh = false;
+        let easyMode = false;
+        inputs = []
+
+        /**
+         * Initialize screen
+         **/
+        const allowDigit = event => {
+            if (event.target.value) {
+                if (isNaN(event.target.value)) {
+                    event.target.value = 0;
+                }
+                event.target.value = event.target.value % 10;
+            } else {
+                event.target.value = 0;
+            }
+        }
+
+        const createInputBoxes = () => {
+            const codeDiv = document.querySelector('#input');
+            for (_ in secretCode) {
+                const input = document.createElement('input');
+                input.type = 'number';
+                input.min = 0;
+                input.max = 9;
+                input.value = 0;
+                input.onchange = allowDigit
+                codeDiv.appendChild(input);
+                inputs.push(input)
+            }
+        }
+
+        /**
+         * Check code on press
+         **/
+        const isCodeGood = () => {
+            for (let pos in inputs) {
+                if (inputs[pos].value !== `${secretCode[pos]}`) {
+                    return false;
+                }
+            }
+            return true;
+        }
+
+        const colorInputs = () => {
+            for (let pos in inputs) {
+                if (inputs[pos].value === `${secretCode[pos]}`) {
+                    inputs[pos].style.borderColor = 'green';
+                } else {
+                    inputs[pos].style.borderColor = 'red';
+                }
+            } 
+        }
+
+        const checkResult = () => {
+            if (isCodeGood()) {
+                document.querySelector('#title').innerHTML = "Code Is Good";
+                document.querySelector('body').innerHTML = "<h1>Code Is Correct!</h1>";
+                document.querySelector('body').style.gridTemplateRows = "1fr";
+            } else {
+                document.querySelector('#title').innerHTML = "Wrong Code";
+                if (!easyMode) {
+                    needRefresh = true;
+                    document.querySelector('#codeButton').innerHTML = 'Reset Code';
+                } else {
+                    colorInputs()
+                }
+            }
+        }
+
+        const resetCode = () => {
+            for (let input of inputs) {
+                    input.value = 0;
+                }
+                document.querySelector('#codeButton').innerHTML = 'Check Code';
+                document.querySelector('#title').innerHTML = 'Enter Code';
+                needRefresh = false;
+        }
+
+        const buttonPress = () => {
+            if (!needRefresh) {
+                checkResult()
+            } else { 
+                resetCode()
+            }
+        }
+
+        /**
+         * Set easy mode
+         **/
+        const setEasyMode = () => {
+            easyMode = !easyMode;
+            document.querySelector('#helpButton').innerHTML = easyMode ? "Don't Help" : "Help Me";
+        }
+
+        createInputBoxes();
+    </script>
+</body>
+</html>
