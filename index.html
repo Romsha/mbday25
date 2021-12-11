@@ -119,7 +119,8 @@
             const codeDiv = document.querySelector('#input');
             for (_ in secretCode) {
                 const input = document.createElement('input');
-                input.type = 'number';
+                input.type = "number";
+                input.pattern="\d*";
                 input.min = 0;
                 input.max = 9;
                 input.value = 0;
